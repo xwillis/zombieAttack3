@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ game.name }} - Zombie Attack 3{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="game-layout">
+    <!-- Map -->
+    <div class="map-container" id="map-container">
+        <svg id="map-svg" class="map-svg" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid meet">
+            <g id="adjacency-lines"></g>
+            <g id="territories"></g>
+        </svg>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+        <!-- Turn Info -->
+        <div class="panel-section">
+            <h4>Turn Info</h4>
+            <div id="turn-info">Loading...</div>
+        </div>
+
+        <!-- Territory Info -->
+        <div class="panel-section">
+            <h4>Selected Territory</h4>
+            <div id="territory-info" class="territory-info">
+                <p class="text-muted">Click a territory to see details.</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="panel-section">
+            <h4>Actions</h4>
+            <div id="action-panel" class="action-buttons"></div>
+        </div>
+
+        <!-- Players -->
+        <div class="panel-section">
+            <h4>Players</h4>
+            <div id="player-list" class="player-list"></div>
+        </div>
+
+        <!-- Chat -->
+        <div class="panel-section">
+            <h4>Chat</h4>
+            <div id="chat-box" class="chat-box"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type message..."
+                       onkeydown="if(event.key==='Enter')sendChat()">
+                <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GAME_ID = {{ game.id }};
+    const MY_USER_ID = {{ current_user.id }};
+    const MY_CHARACTER = "{{ player.character_type }}";
+    const ZOMBIE_COLOR = "#6b3fa0";
+    const NEUTRAL_COLOR = "#4a4a5a";
+</script>
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+{% endblock %}

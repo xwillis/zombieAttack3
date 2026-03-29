@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Open Games - Zombie Attack 3{% endblock %}
+{% block content %}
+<h2 class="mb-2">Open Games</h2>
+{% if games %}
+    {% for g in games %}
+    <div class="card open-game-card">
+        <div class="game-info">
+            <div class="game-name">{{ g.name }}</div>
+            <div class="game-meta">{{ g.map_name }} &middot; {{ g.players }}/{{ g.max_players }} players</div>
+        </div>
+        <form method="POST" action="{{ url_for('join_game', game_id=g.id) }}">
+            <button type="submit" class="btn btn-primary btn-sm">Join</button>
+        </form>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <p class="text-muted">No open games right now. <a href="{{ url_for('dashboard') }}">Create one!</a></p>
+    </div>
+{% endif %}
+{% endblock %}

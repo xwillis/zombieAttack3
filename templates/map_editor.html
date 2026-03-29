@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Map Editor - Zombie Attack 3{% endblock %}
+{% block content %}
+<h2 class="mb-2">Map Editor</h2>
+<div class="editor-layout">
+    <!-- Canvas -->
+    <svg id="editor-svg" class="editor-canvas" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid meet">
+        <g id="editor-lines"></g>
+        <g id="editor-territories"></g>
+    </svg>
+
+    <!-- Panel -->
+    <div class="editor-panel">
+        <div class="card">
+            <h3>Map Settings</h3>
+            <div class="form-group">
+                <label for="map-name">Map Name</label>
+                <input type="text" id="map-name" placeholder="My Custom Map">
+            </div>
+            <p class="text-muted" style="font-size:0.8rem;">
+                Click on the canvas to place territories. Then link them by selecting two territories
+                and clicking "Link". Need at least 6 territories.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Tools</h3>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="btn-add-mode" onclick="setMode('add')">Add Territory</button>
+                <button class="btn btn-secondary" id="btn-link-mode" onclick="setMode('link')">Link Territories</button>
+                <button class="btn btn-danger" id="btn-delete-mode" onclick="setMode('delete')">Delete Territory</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Territories (<span id="territory-count">0</span>)</h3>
+            <div id="territory-list" style="max-height:200px;overflow-y:auto;"></div>
+        </div>
+
+        <div class="card">
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="saveMap()">Save Map</button>
+                <button class="btn btn-secondary" onclick="clearMap()">Clear All</button>
+            </div>
+            <div id="editor-status" class="mt-1 text-muted" style="font-size:0.85rem;"></div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/map_editor.js') }}"></script>
+{% endblock %}
