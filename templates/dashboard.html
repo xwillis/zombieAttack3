@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Zombie Attack 3{% endblock %}
+{% block content %}
+<h2 class="mb-2">Dashboard</h2>
+<div class="dashboard-grid">
+    <div>
+        <!-- Active Games -->
+        <div class="card">
+            <h3>Active Games ({{ active_count }}/3)</h3>
+            {% if active_games %}
+                {% for game in active_games %}
+                <div class="game-item">
+                    <div class="game-info">
+                        <div class="game-name">{{ game.name }}</div>
+                        <div class="game-meta">
+                            {{ game.map.name }} &middot;
+                            {{ game.players|length }}/{{ game.max_players }} players &middot;
+                            <span class="status-badge status-{{ game.status }}">{{ game.status }}</span>
+                        </div>
+                    </div>
+                    {% if game.status == 'active' %}
+                    <a href="{{ url_for('game_view', game_id=game.id) }}" class="btn btn-primary btn-sm">Play</a>
+                    {% else %}
+                    <a href="{{ url_for('character_select', game_id=game.id) }}" class="btn btn-secondary btn-sm">Lobby</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No active games. Create one or join an open game!</p>
+            {% endif %}
+        </div>
+
+        <!-- Finished Games -->
+        {% if finished_games %}
+        <div class="card">
+            <h3>Recent Games</h3>
+            {% for game in finished_games %}
+            <div class="game-item">
+                <div class="game-info">
+                    <div class="game-name">{{ game.name }}</div>
+                    <div class="game-meta">
+                        {% if game.winner %}Winner: {{ game.winner.username }}{% else %}No winner{% endif %}
+                    </div>
+                </div>
+                <span class="status-badge status-finished">Finished</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <!-- Create Game -->
+        {% if can_join %}
+        <div class="card">
+            <h3>Create Game</h3>
+            <form method="POST" action="{{ url_for('create_game') }}">
+                <div class="form-group">
+                    <label for="game_name">Game Name</label>
+                    <input type="text" id="game_name" name="game_name" placeholder="My Game">
+                </div>
+                <div class="form-group">
+                    <label for="map_id">Map</label>
+                    <select id="map_id" name="map_id" required>
+                        {% for m in maps %}
+                        <option value="{{ m.id }}">{{ m.name }}{% if not m.is_default %} (custom){% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="max_players">Max Players</label>
+                    <select id="max_players" name="max_players">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Game</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="card">
+            <h3>Create Game</h3>
+            <p class="text-muted">You have 3 active games. Finish one to create a new game.</p>
+        </div>
+        {% endif %}
+
+        <!-- Player Search -->
+        <div class="card">
+            <h3>Find Players</h3>
+            <div class="form-group">
+                <input type="text" id="player-search" placeholder="Search by username..." oninput="searchPlayers(this.value)">
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
