@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Office Heist — A Puzzle Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="game-root">
+    <!-- HUD -->
+    <div id="hud">
+      <div id="hud-left">
+        <span id="view-label">View: Office</span>
+      </div>
+      <div id="hud-right">
+        <span id="status">Avoid the guard. Break into a computer.</span>
+      </div>
+    </div>
+
+    <!-- Top-down office view -->
+    <canvas id="office" width="960" height="640"></canvas>
+
+    <!-- Cubicle (mouse-driven) view -->
+    <div id="cubicle-view" class="view hidden">
+      <div class="cubicle-scene">
+        <div class="desk">
+          <div class="monitor" id="monitor" title="Click the computer">
+            <div class="monitor-screen">
+              <div class="lock-icon">🔒</div>
+              <div class="monitor-label">Click to log in</div>
+            </div>
+            <div class="monitor-stand"></div>
+          </div>
+          <div class="keyboard"></div>
+          <div class="mouse"></div>
+          <div class="coffee" title="A half-finished coffee">☕</div>
+          <div class="plant" title="A sad office plant">🪴</div>
+          <div class="notes" id="sticky-note" title="A suspicious sticky note">
+            <div class="note-text">
+              <div><b>Don't tell IT!</b></div>
+              <div>u: <span id="note-user">admin</span></div>
+              <div>p: <span id="note-pass">hunter2</span></div>
+            </div>
+          </div>
+        </div>
+        <button id="leave-cubicle" class="ghost-btn">← Leave cubicle (Esc)</button>
+      </div>
+    </div>
+
+    <!-- Login (computer screen) view -->
+    <div id="login-view" class="view hidden">
+      <div class="login-screen">
+        <div class="login-chrome">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="chrome-title">OfficeOS — Sign In</span>
+        </div>
+        <form id="login-form" autocomplete="off">
+          <div class="login-logo">OfficeOS</div>
+          <label>
+            <span>Username</span>
+            <input type="text" id="username" autocomplete="off" spellcheck="false" />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" id="password" autocomplete="off" />
+          </label>
+          <div class="login-buttons">
+            <button type="button" id="login-cancel" class="ghost-btn">Cancel (Esc)</button>
+            <button type="submit" id="login-submit" class="primary-btn">Log in ⏎</button>
+          </div>
+          <div id="login-message" class="login-message"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal" class="modal hidden">
+      <div class="modal-body">
+        <h1 id="modal-title">You lose</h1>
+        <p id="modal-text">The guard spotted you.</p>
+        <button id="modal-btn" class="primary-btn">Try again</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
