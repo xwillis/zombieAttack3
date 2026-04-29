@@ -1,0 +1,41 @@
+# Local env
+.env
+.env.local
+
+# WordPress runtime
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/object-cache.php
+wp/
+
+# Don't commit core or third-party plugins; init script installs them.
+wp-content/plugins/*
+!wp-content/plugins/tm-member-portal/
+!wp-content/plugins/.gitkeep
+
+# Don't commit Astra parent; child theme references it.
+wp-content/themes/*
+!wp-content/themes/tm-portal/
+!wp-content/themes/.gitkeep
+
+# Backups
+backups/
+*.sql
+*.sql.gz
+*.tar.gz
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Docker
+docker-data/

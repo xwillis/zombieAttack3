@@ -1,0 +1,127 @@
+# docker-compose.yml — Texas Mountaineers member portal
+# Stack: Nginx + PHP-FPM 8.2 + MariaDB 10.11 + Redis (object cache) + wp-cli
+# Sized for ≤500 members. Runs identically on a developer laptop and a $5–10/mo VPS.
+
+name: tm-portal
+
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [tm]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    networks: [tm]
+
+  php:
+    build: ./php
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: tm_
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_REDIS_PORT', 6379);
+        define('WP_REDIS_DATABASE', 0);
+        define('WP_CACHE', true);
+        define('DISALLOW_FILE_EDIT', true);
+        define('FORCE_SSL_ADMIN', ${FORCE_SSL_ADMIN:-false});
+        define('WP_AUTO_UPDATE_CORE', 'minor');
+        define('AUTOMATIC_UPDATER_DISABLED', false);
+        define('WP_MEMORY_LIMIT', '256M');
+        define('WP_MAX_MEMORY_LIMIT', '512M');
+        define('TM_DISCORD_WEBHOOK_URL', '${DISCORD_WEBHOOK_URL:-}');
+        define('TM_FROM_EMAIL', '${MAIL_FROM:-noreply@texasmountaineers.org}');
+        define('TM_FROM_NAME', '${MAIL_FROM_NAME:-Texas Mountaineers}');
+    volumes:
+      - wp_core:/var/www/html
+      - ./wp-content/plugins/tm-member-portal:/var/www/html/wp-content/plugins/tm-member-portal
+      - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ./wp-content/themes/tm-portal:/var/www/html/wp-content/themes/tm-portal
+      - ./php/php.ini:/usr/local/etc/php/conf.d/zz-tm.ini:ro
+      - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+    networks: [tm]
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on: [php]
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - wp_core:/var/www/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [tm]
+
+  wpcli:
+    build: ./php
+    profiles: ["tools"]
+    user: "33:33"
+    entrypoint: ["wp", "--allow-root"]
+    depends_on:
+      db:
+        condition: service_healthy
+      php:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - wp_core:/var/www/html
+      - ./wp-content/plugins/tm-member-portal:/var/www/html/wp-content/plugins/tm-member-portal
+      - ./wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ./wp-content/themes/tm-portal:/var/www/html/wp-content/themes/tm-portal
+      - ./scripts:/scripts:ro
+    networks: [tm]
+
+  backup:
+    build: ./php
+    profiles: ["tools"]
+    entrypoint: ["/bin/bash", "/scripts/backup.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+    volumes:
+      - wp_core:/var/www/html:ro
+      - ./scripts:/scripts:ro
+      - ./backups:/backups
+    networks: [tm]
+
+volumes:
+  db_data:
+  wp_core:
+
+networks:
+  tm:
+    driver: bridge
