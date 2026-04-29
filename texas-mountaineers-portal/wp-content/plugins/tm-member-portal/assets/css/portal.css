@@ -1,0 +1,56 @@
+/* Texas Mountaineers portal styles. Minimal, theme-agnostic. */
+
+.tm-dashboard h2 {
+    margin-top: 0;
+}
+.tm-card {
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.tm-card h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+.tm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.tm-table th, .tm-table td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+.tm-ok   { color: #1a7f37; font-weight: 600; }
+.tm-warn { color: #b35900; font-weight: 600; }
+
+.tm-notice {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+.tm-notice-warning {
+    background: #fff5e6;
+    border-left: 4px solid #ff8800;
+}
+
+.tm-waiver-text {
+    background: #fafafa;
+    padding: 1rem;
+    white-space: pre-wrap;
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid #eee;
+    max-height: 480px;
+    overflow: auto;
+}
+
+.tm-class-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+}

@@ -1,0 +1,47 @@
+/*
+Theme Name:   Texas Mountaineers Portal
+Theme URI:    https://texasmountaineers.org
+Description:  Astra child theme for the Texas Mountaineers member portal.
+Author:       Texas Mountaineers
+Template:     astra
+Version:      0.1.0
+Text Domain:  tm-portal
+*/
+
+:root {
+    --tm-primary: #1f4d3a;   /* Pine green */
+    --tm-accent:  #c4751b;   /* Sandstone orange */
+    --tm-dark:    #1c1c1c;
+    --tm-light:   #fbfaf6;
+}
+
+body {
+    background: var(--tm-light);
+    color: var(--tm-dark);
+}
+
+a, .button {
+    color: var(--tm-primary);
+}
+
+.tm-hero {
+    background: var(--tm-primary);
+    color: #fff;
+    padding: 4rem 1rem;
+    text-align: center;
+}
+.tm-hero h1 {
+    color: #fff;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+}
+
+.tm-cta {
+    background: var(--tm-accent);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+.tm-cta:hover { color: #fff; opacity: 0.9; }
